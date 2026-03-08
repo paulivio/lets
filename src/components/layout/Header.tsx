@@ -36,7 +36,12 @@ async function parseFile(file: File): Promise<Booking[]> {
   })
 }
 
-export function Header() {
+interface HeaderProps {
+  user: string
+  onLogout: () => void
+}
+
+export function Header({ user, onLogout }: HeaderProps) {
   const { dispatch, state } = useDashboard()
   const filtered = useFilteredBookings()
   const fileRef = useRef<HTMLInputElement>(null)
@@ -105,6 +110,25 @@ export function Header() {
         >
           ↑ Import Excel
         </button>
+
+        {/* User + logout */}
+        <div className="flex items-center gap-2 pl-2" style={{ borderLeft: '1px solid var(--border)' }}>
+          <span className="text-[11px]" style={{ color: 'var(--muted)' }}>{user}</span>
+          <button
+            onClick={onLogout}
+            className="text-[11px] px-2.5 py-1 rounded cursor-pointer transition-colors"
+            style={{
+              background: 'var(--surface2)',
+              border: '1px solid var(--border)',
+              color: 'var(--muted)',
+              fontFamily: "'DM Mono', monospace",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#e05a8a'; e.currentTarget.style.color = '#e05a8a' }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--muted)' }}
+          >
+            sign out
+          </button>
+        </div>
       </div>
     </header>
   )

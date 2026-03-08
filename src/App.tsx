@@ -8,10 +8,12 @@ import { GridView } from './components/views/GridView'
 import { TableView } from './components/views/TableView'
 import { RoomMapView } from './components/views/RoomMapView'
 import { SiteCoveragePanel } from './components/panels/SiteCoveragePanel'
+import { LoginScreen } from './components/auth/LoginScreen'
 import { Tooltip } from './components/ui/Tooltip'
+import { getSessionUser, logout } from './auth'
 import type { Booking } from './types'
 
-function Dashboard() {
+function Dashboard({ user, onLogout }: { user: string; onLogout: () => void }) {
   const { state } = useDashboard()
   const [tooltip, setTooltip] = useState<{ booking: Booking; x: number; y: number } | null>(null)
 
@@ -22,7 +24,7 @@ function Dashboard() {
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg)', color: 'var(--text)' }}>
-      <Header />
+      <Header user={user} onLogout={onLogout} />
       <Controls />
       <main className="px-7 py-6">
         <AnimatePresence mode="wait">
@@ -47,9 +49,24 @@ function Dashboard() {
 }
 
 export default function App() {
+  const [user, setUser] = useState<string | null>(() => getSessionUser())
+
+  function handleLogin(name: string) {
+    setUser(name)
+  }
+
+  function handleLogout() {
+    logout()
+    setUser(null)
+  }
+
+  if (!user) {
+    return <LoginScreen onLogin={handleLogin} />
+  }
+
   return (
     <DashboardProvider>
-      <Dashboard />
+      <Dashboard user={user} onLogout={handleLogout} />
     </DashboardProvider>
   )
 }
