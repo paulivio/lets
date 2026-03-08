@@ -25,19 +25,12 @@ export function Controls() {
   const { state, dispatch } = useDashboard()
 
   return (
-    <div
-      className="px-7 py-[14px] flex items-center gap-3 flex-wrap"
-      style={{ background: 'var(--bg)', borderBottom: '1px solid var(--border)' }}
-    >
-      {/* Tabs */}
-      <div
-        className="flex overflow-hidden rounded-md"
-        style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
-      >
+    <div className="px-7 py-[14px] flex items-center gap-3 flex-wrap" style={{ background: 'var(--bg)', borderBottom: '1px solid var(--border)' }}>
+      <div className="flex overflow-hidden rounded-md" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
         {TABS.map(({ view, label }, i) => (
           <button
             key={view}
-            className="px-4 py-1.5 text-xs cursor-pointer transition-all whitespace-nowrap"
+            className="px-4 py-1.5 text-xs cursor-pointer whitespace-nowrap"
             style={{
               background: state.view === view ? 'var(--accent)' : 'transparent',
               color: state.view === view ? '#000' : 'var(--muted)',
@@ -53,41 +46,16 @@ export function Controls() {
         ))}
       </div>
 
-      {/* Filters */}
       <div className="flex gap-2 items-center ml-auto">
         <span className="text-[11px]" style={{ color: 'var(--muted)' }}>SITE:</span>
-        <select
-          style={selectStyle}
-          value={state.filterSite}
-          onChange={(e) => dispatch({ type: 'SET_FILTER_SITE', site: e.target.value })}
-        >
+        <select style={selectStyle} value={state.filterSite} onChange={(e) => dispatch({ type: 'SET_FILTER_SITE', site: e.target.value })}>
           <option value="">All Sites</option>
           {SITES.map((s) => <option key={s}>{s}</option>)}
         </select>
         <span className="text-[11px]" style={{ color: 'var(--muted)' }}>ROOM:</span>
-        <select
-          style={selectStyle}
-          value={state.filterRoom}
-          onChange={(e) => dispatch({ type: 'SET_FILTER_ROOM', room: e.target.value })}
-        >
+        <select style={selectStyle} value={state.filterRoom} onChange={(e) => dispatch({ type: 'SET_FILTER_ROOM', room: e.target.value })}>
           <option value="">All Rooms</option>
           {ROOMS.map((r) => <option key={r}>{r}</option>)}
-        </select>
-        <span className="text-[11px]" style={{ color: 'var(--muted)' }}>COVERAGE:</span>
-        <select
-          style={selectStyle}
-          value={state.filterAllocation}
-          onChange={(e) =>
-            dispatch({
-              type: 'SET_FILTER_ALLOCATION',
-              allocation: e.target.value as typeof state.filterAllocation,
-            })
-          }
-        >
-          <option value="">All</option>
-          <option value="FT">FT</option>
-          <option value="CO">CO</option>
-          <option value="unallocated">Unallocated</option>
         </select>
       </div>
     </div>

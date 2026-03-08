@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import type { Booking } from '../../types'
-import { ALLOC_COLORS } from './AllocationToggle'
 
 interface TooltipProps {
   booking: Booking | null
@@ -52,13 +51,6 @@ export function Tooltip({ booking, x, y }: TooltipProps) {
       Ref: {booking.booking}
       <br />
       Status: {booking.status}
-      <br />
-      Coverage:{' '}
-      {booking.allocation ? (
-        <strong style={{ color: ALLOC_COLORS[booking.allocation] }}>{booking.allocation}</strong>
-      ) : (
-        <span style={{ color: 'var(--muted)' }}>Unallocated</span>
-      )}
     </div>,
     document.body,
   )

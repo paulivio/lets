@@ -3,7 +3,6 @@ import { useDashboard } from '../../context/DashboardContext'
 import { useFilteredBookings } from '../../hooks/useFilteredBookings'
 import type { Booking } from '../../types'
 
-// Dynamic SheetJS import
 async function parseFile(file: File): Promise<Booking[]> {
   const xlsx = await import('xlsx')
   return new Promise((resolve, reject) => {
@@ -27,7 +26,6 @@ async function parseFile(file: File): Promise<Booking[]> {
           status: (['Confirmed', 'Pending', 'Cancelled'].includes(String(row.status ?? row.Status ?? ''))
             ? String(row.status ?? row.Status)
             : 'Confirmed') as Booking['status'],
-          allocation: null,
         }))
         resolve(bookings)
       } catch {
@@ -39,13 +37,25 @@ async function parseFile(file: File): Promise<Booking[]> {
 }
 
 export function Header() {
-  const { dispatch } = useDashboard()
+  const { dispatch, state } = useDashboard()
   const filtered = useFilteredBookings()
   const fileRef = useRef<HTMLInputElement>(null)
 
   const sites = new Set(filtered.map((b) => b.site)).size
   const rooms = new Set(filtered.map((b) => b.room + b.site)).size
-  const unallocated = filtered.filter((b) => !b.allocation).length
+
+  // Count site+date pairs in next 7 days that have bookings
+  const today = new Date(); today.setHours(0, 0, 0, 0)
+  const todayStr = today.toISOString().slice(0, 10)
+  const in7 = new Date(today); in7.setDate(today.getDate() + 7)
+  const in7Str = in7.toISOString().slice(0, 10)
+  const upcomingSiteDates = new Set(
+    state.bookings
+      .filter((b) => b.date >= todayStr && b.date < in7Str)
+      .map((b) => `${b.site}__${b.date}`)
+  )
+  const confirmedCount = [...upcomingSiteDates].filter((k) => state.siteAllocations[k]).length
+  const needsCoverage = upcomingSiteDates.size - confirmedCount
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -61,25 +71,12 @@ export function Header() {
   }
 
   return (
-    <header
-      className="px-7 py-[18px] flex items-center justify-between sticky top-0 z-[100]"
-      style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}
-    >
+    <header className="px-7 py-[18px] flex items-center justify-between sticky top-0 z-[100]" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
       <div className="flex items-center gap-4">
-        <div
-          className="font-[Syne,sans-serif] font-black text-[18px] tracking-tight"
-          style={{ color: 'var(--accent)' }}
-        >
+        <div className="font-[Syne,sans-serif] font-black text-[18px] tracking-tight" style={{ color: 'var(--accent)' }}>
           SITE<span style={{ color: 'var(--text)' }}>COVER</span>
         </div>
-        <div
-          className="px-2.5 py-0.5 rounded text-[11px] tracking-widest"
-          style={{
-            background: 'var(--surface2)',
-            border: '1px solid var(--border)',
-            color: 'var(--muted)',
-          }}
-        >
+        <div className="px-2.5 py-0.5 rounded text-[11px] tracking-widest" style={{ background: 'var(--surface2)', border: '1px solid var(--border)', color: 'var(--muted)' }}>
           COVERAGE PLANNER
         </div>
       </div>
@@ -90,24 +87,19 @@ export function Header() {
             { val: sites, label: 'SITES' },
             { val: filtered.length, label: 'BOOKINGS' },
             { val: rooms, label: 'ROOMS USED' },
-            { val: unallocated, label: 'UNALLOCATED', warn: unallocated > 0 },
+            { val: needsCoverage, label: 'NEEDS COVERAGE', warn: needsCoverage > 0 },
           ].map(({ val, label, warn }) => (
             <div key={label} className="text-right">
-              <div
-                className="font-[Syne,sans-serif] font-bold text-xl leading-none"
-                style={{ color: warn ? '#e05a8a' : 'var(--accent)' }}
-              >
+              <div className="font-[Syne,sans-serif] font-bold text-xl leading-none" style={{ color: warn ? '#e05a8a' : 'var(--accent)' }}>
                 {val}
               </div>
-              <div className="text-[10px] mt-0.5 tracking-widest" style={{ color: 'var(--muted)' }}>
-                {label}
-              </div>
+              <div className="text-[10px] mt-0.5 tracking-widest" style={{ color: 'var(--muted)' }}>{label}</div>
             </div>
           ))}
         </div>
         <input ref={fileRef} type="file" accept=".xlsx,.xls,.csv" className="hidden" onChange={handleFile} />
         <button
-          className="px-5 py-2 rounded-md text-xs font-medium cursor-pointer transition-opacity hover:opacity-85"
+          className="px-5 py-2 rounded-md text-xs font-medium cursor-pointer hover:opacity-85"
           style={{ background: 'var(--accent)', color: '#000', border: 'none', fontFamily: "'DM Mono', monospace" }}
           onClick={() => fileRef.current?.click()}
         >

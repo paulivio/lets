@@ -2,7 +2,6 @@ import { useMemo } from 'react'
 import { useDashboard } from '../../context/DashboardContext'
 import { useFilteredBookings } from '../../hooks/useFilteredBookings'
 import { HOURS, ROOM_COLORS } from '../../constants'
-import { AllocationToggle } from '../ui/AllocationToggle'
 import type { Booking } from '../../types'
 
 interface Props {
@@ -50,52 +49,32 @@ export function CalendarView({ onHover }: Props) {
 
   return (
     <div>
-      {/* Week nav */}
       <div className="flex items-center gap-3 mb-4">
         <button
-          className="px-3 py-1.5 text-xs rounded-md cursor-pointer transition-all"
+          className="px-3 py-1.5 text-xs rounded-md cursor-pointer"
           style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text)' }}
           onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
           onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
           onClick={() => dispatch({ type: 'SET_WEEK_OFFSET', offset: state.weekOffset - 1 })}
-        >
-          ← Prev Week
-        </button>
-        <span className="font-[Syne,sans-serif] font-bold text-[15px]" style={{ color: 'var(--text)' }}>
-          {weekLabel}
-        </span>
+        >← Prev Week</button>
+        <span className="font-[Syne,sans-serif] font-bold text-[15px]">{weekLabel}</span>
         <button
-          className="px-3 py-1.5 text-xs rounded-md cursor-pointer transition-all"
+          className="px-3 py-1.5 text-xs rounded-md cursor-pointer"
           style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text)' }}
           onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
           onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
           onClick={() => dispatch({ type: 'SET_WEEK_OFFSET', offset: state.weekOffset + 1 })}
-        >
-          Next Week →
-        </button>
+        >Next Week →</button>
         <button
-          className="px-3 py-1.5 text-xs rounded-md cursor-pointer ml-2 transition-all"
+          className="px-3 py-1.5 text-xs rounded-md cursor-pointer ml-2"
           style={{ background: 'var(--surface)', border: '1px solid var(--accent)', color: 'var(--accent)' }}
           onClick={() => dispatch({ type: 'SET_WEEK_OFFSET', offset: 0 })}
-        >
-          Today
-        </button>
+        >Today</button>
       </div>
 
-      {/* Calendar grid */}
       <div className="overflow-x-auto">
-        <div
-          className="grid rounded-lg overflow-hidden"
-          style={{
-            gridTemplateColumns: '90px repeat(7, 1fr)',
-            border: '1px solid var(--border)',
-          }}
-        >
-          {/* Header row */}
-          <div
-            className="p-2.5 text-center text-xs font-[Syne,sans-serif] font-semibold"
-            style={{ background: 'var(--surface2)', borderBottom: '1px solid var(--border)', borderRight: '1px solid var(--border)' }}
-          />
+        <div className="grid rounded-lg overflow-hidden" style={{ gridTemplateColumns: '90px repeat(7, 1fr)', border: '1px solid var(--border)' }}>
+          <div className="p-2.5" style={{ background: 'var(--surface2)', borderBottom: '1px solid var(--border)', borderRight: '1px solid var(--border)' }} />
           {days.map((d, i) => (
             <div
               key={i}
@@ -107,35 +86,24 @@ export function CalendarView({ onHover }: Props) {
                 color: dateStr(d) === todayStr ? 'var(--accent)' : 'var(--text)',
               }}
             >
-              {DAY_LABELS[i]}
-              <br />
+              {DAY_LABELS[i]}<br />
               <span className="text-[15px] font-bold">{d.getDate()}</span>
             </div>
           ))}
 
-          {/* Time column */}
           <div style={{ background: 'var(--surface)', borderRight: '1px solid var(--border)' }}>
             {HOURS.map((h) => (
-              <div
-                key={h}
-                className="flex items-start pt-1 px-2 text-[10px]"
-                style={{ height: 52, color: 'var(--muted)', borderBottom: '1px solid var(--border)' }}
-              >
+              <div key={h} className="flex items-start pt-1 px-2 text-[10px]" style={{ height: 52, color: 'var(--muted)', borderBottom: '1px solid var(--border)' }}>
                 {String(h).padStart(2, '0')}:00
               </div>
             ))}
           </div>
 
-          {/* Day columns */}
           {days.map((d, di) => {
             const ds = dateStr(d)
             const dayBookings = filtered.filter((b) => b.date === ds)
             return (
-              <div
-                key={di}
-                className="relative"
-                style={{ borderRight: di < 6 ? '1px solid var(--border)' : undefined }}
-              >
+              <div key={di} className="relative" style={{ borderRight: di < 6 ? '1px solid var(--border)' : undefined }}>
                 {HOURS.map((h) => (
                   <div key={h} style={{ height: 52, borderBottom: '1px solid rgba(42,47,61,0.4)' }} />
                 ))}
@@ -148,19 +116,13 @@ export function CalendarView({ onHover }: Props) {
                   return (
                     <div
                       key={b.id}
-                      className="absolute left-[3px] right-[3px] rounded text-[10px] leading-snug cursor-default overflow-hidden z-[2] transition-opacity hover:opacity-90"
-                      style={{ top, height, background: color, padding: '3px 5px 3px 6px' }}
+                      className="absolute left-[3px] right-[3px] rounded text-[10px] leading-snug cursor-default overflow-hidden z-[2] hover:opacity-85"
+                      style={{ top, height, background: color, padding: '3px 6px' }}
                       onMouseEnter={(e) => onHover(b, e)}
                       onMouseLeave={() => onHover(null)}
                     >
                       <div className="font-medium truncate">{b.site.split(' ')[0]}</div>
                       <div className="opacity-85 text-[9px]">{b.room} · {b.startTime}–{b.endTime}</div>
-                      {/* Allocation toggle — shown when event is tall enough */}
-                      {height >= 48 && (
-                        <div className="mt-1">
-                          <AllocationToggle booking={b} compact />
-                        </div>
-                      )}
                     </div>
                   )
                 })}

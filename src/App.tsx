@@ -7,6 +7,7 @@ import { CalendarView } from './components/views/CalendarView'
 import { GridView } from './components/views/GridView'
 import { TableView } from './components/views/TableView'
 import { RoomMapView } from './components/views/RoomMapView'
+import { SiteCoveragePanel } from './components/panels/SiteCoveragePanel'
 import { Tooltip } from './components/ui/Tooltip'
 import type { Booking } from './types'
 
@@ -15,11 +16,8 @@ function Dashboard() {
   const [tooltip, setTooltip] = useState<{ booking: Booking; x: number; y: number } | null>(null)
 
   const handleHover = useCallback((booking: Booking | null, e?: React.MouseEvent) => {
-    if (!booking || !e) {
-      setTooltip(null)
-    } else {
-      setTooltip({ booking, x: e.clientX, y: e.clientY })
-    }
+    if (!booking || !e) setTooltip(null)
+    else setTooltip({ booking, x: e.clientX, y: e.clientY })
   }, [])
 
   return (
@@ -42,9 +40,8 @@ function Dashboard() {
           </motion.div>
         </AnimatePresence>
       </main>
-      {tooltip && (
-        <Tooltip booking={tooltip.booking} x={tooltip.x} y={tooltip.y} />
-      )}
+      <SiteCoveragePanel />
+      {tooltip && <Tooltip booking={tooltip.booking} x={tooltip.x} y={tooltip.y} />}
     </div>
   )
 }
