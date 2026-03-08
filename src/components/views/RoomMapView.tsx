@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useDashboard } from '../../context/DashboardContext'
 import { useFilteredBookings } from '../../hooks/useFilteredBookings'
 import { ROOMS, ROOM_COLORS, SITES } from '../../constants'
+import { AllocationToggle } from '../ui/AllocationToggle'
 import type { Booking } from '../../types'
 
 interface Props {
@@ -62,10 +63,7 @@ export function RoomMapView({ onHover }: Props) {
                 color: isActive ? color : 'var(--text)',
               }}
               onClick={() =>
-                dispatch({
-                  type: 'SET_ACTIVE_ROOM_FILTER',
-                  room: state.activeRoomFilter === r ? null : r,
-                })
+                dispatch({ type: 'SET_ACTIVE_ROOM_FILTER', room: state.activeRoomFilter === r ? null : r })
               }
             >
               <div className="w-2.5 h-2.5 rounded-full" style={{ background: color }} />
@@ -141,7 +139,7 @@ export function RoomMapView({ onHover }: Props) {
                   return (
                     <div
                       key={`${site}-${room}-${di}`}
-                      className="p-1 flex flex-col gap-0.5 min-h-[52px]"
+                      className="p-1 flex flex-col gap-1 min-h-[52px]"
                       style={{
                         borderBottom: '1px solid var(--border)',
                         borderRight: di < 6 ? '1px solid var(--border)' : undefined,
@@ -150,13 +148,16 @@ export function RoomMapView({ onHover }: Props) {
                       {dayB.map((b) => (
                         <div
                           key={b.id}
-                          className="rounded px-1.5 py-0.5 text-[9px] font-medium text-black leading-snug whitespace-nowrap overflow-hidden text-ellipsis cursor-pointer"
+                          className="rounded px-1.5 py-0.5 text-[9px] font-medium text-black leading-snug cursor-default"
                           style={{ background: color }}
                           title={`${b.client} (${b.status})`}
                           onMouseEnter={(e) => onHover(b, e)}
                           onMouseLeave={() => onHover(null)}
                         >
-                          {b.startTime}–{b.endTime}
+                          <div className="truncate">{b.startTime}–{b.endTime}</div>
+                          <div className="mt-0.5">
+                            <AllocationToggle booking={b} compact />
+                          </div>
                         </div>
                       ))}
                     </div>

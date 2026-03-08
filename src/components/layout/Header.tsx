@@ -27,6 +27,7 @@ async function parseFile(file: File): Promise<Booking[]> {
           status: (['Confirmed', 'Pending', 'Cancelled'].includes(String(row.status ?? row.Status ?? ''))
             ? String(row.status ?? row.Status)
             : 'Confirmed') as Booking['status'],
+          allocation: null,
         }))
         resolve(bookings)
       } catch {
@@ -44,6 +45,7 @@ export function Header() {
 
   const sites = new Set(filtered.map((b) => b.site)).size
   const rooms = new Set(filtered.map((b) => b.room + b.site)).size
+  const unallocated = filtered.filter((b) => !b.allocation).length
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -88,11 +90,12 @@ export function Header() {
             { val: sites, label: 'SITES' },
             { val: filtered.length, label: 'BOOKINGS' },
             { val: rooms, label: 'ROOMS USED' },
-          ].map(({ val, label }) => (
+            { val: unallocated, label: 'UNALLOCATED', warn: unallocated > 0 },
+          ].map(({ val, label, warn }) => (
             <div key={label} className="text-right">
               <div
                 className="font-[Syne,sans-serif] font-bold text-xl leading-none"
-                style={{ color: 'var(--accent)' }}
+                style={{ color: warn ? '#e05a8a' : 'var(--accent)' }}
               >
                 {val}
               </div>

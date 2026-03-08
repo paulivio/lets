@@ -48,6 +48,7 @@ export function generateSampleBookings(): Booking[] {
         booking: `BK-${String(1000 + id).slice(1)}`,
         client: randOf(CLIENTS),
         status: randOf(STATUSES),
+        allocation: null,
       })
     }
   }

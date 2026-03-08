@@ -9,6 +9,7 @@ const initialState: DashboardState = {
   weekOffset: 0,
   filterSite: '',
   filterRoom: '',
+  filterAllocation: '',
   sortKey: 'date',
   sortDir: 1,
   tableSearch: '',
@@ -28,6 +29,8 @@ function reducer(state: DashboardState, action: DashboardAction): DashboardState
       return { ...state, filterSite: action.site }
     case 'SET_FILTER_ROOM':
       return { ...state, filterRoom: action.room }
+    case 'SET_FILTER_ALLOCATION':
+      return { ...state, filterAllocation: action.allocation }
     case 'SET_SORT':
       return {
         ...state,
@@ -40,6 +43,13 @@ function reducer(state: DashboardState, action: DashboardAction): DashboardState
       return { ...state, tableStatusFilter: action.status }
     case 'SET_ACTIVE_ROOM_FILTER':
       return { ...state, activeRoomFilter: action.room }
+    case 'SET_ALLOCATION':
+      return {
+        ...state,
+        bookings: state.bookings.map((b) =>
+          b.id === action.id ? { ...b, allocation: action.allocation } : b,
+        ),
+      }
     default:
       return state
   }

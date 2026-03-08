@@ -3,6 +3,7 @@ import { useDashboard } from '../../context/DashboardContext'
 import { useFilteredBookings } from '../../hooks/useFilteredBookings'
 import { RoomTag } from '../ui/RoomTag'
 import { StatusTag } from '../ui/StatusTag'
+import { AllocationToggle } from '../ui/AllocationToggle'
 import type { Booking } from '../../types'
 
 interface Props {
@@ -108,13 +109,23 @@ export function TableView({ onHover }: Props) {
                   {label}{sortIndicator(key)}
                 </th>
               ))}
+              <th
+                className="px-3.5 py-2.5 text-left text-[10px] tracking-widest uppercase whitespace-nowrap"
+                style={{
+                  color: 'var(--muted)',
+                  borderBottom: '1px solid var(--border)',
+                  fontFamily: "'DM Mono', monospace",
+                }}
+              >
+                COVERAGE
+              </th>
             </tr>
           </thead>
           <tbody>
             {rows.length === 0 ? (
               <tr>
                 <td
-                  colSpan={8}
+                  colSpan={9}
                   className="text-center py-12"
                   style={{ color: 'var(--muted)' }}
                 >
@@ -144,6 +155,9 @@ export function TableView({ onHover }: Props) {
                   <td className="px-3.5 py-2 text-xs" style={{ color: 'var(--muted)' }}>{b.booking}</td>
                   <td className="px-3.5 py-2 text-xs">{b.client}</td>
                   <td className="px-3.5 py-2 text-xs"><StatusTag status={b.status} /></td>
+                  <td className="px-3.5 py-2 text-xs">
+                    <AllocationToggle booking={b} />
+                  </td>
                 </tr>
               ))
             )}

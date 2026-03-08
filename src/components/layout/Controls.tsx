@@ -73,6 +73,22 @@ export function Controls() {
           <option value="">All Rooms</option>
           {ROOMS.map((r) => <option key={r}>{r}</option>)}
         </select>
+        <span className="text-[11px]" style={{ color: 'var(--muted)' }}>COVERAGE:</span>
+        <select
+          style={selectStyle}
+          value={state.filterAllocation}
+          onChange={(e) =>
+            dispatch({
+              type: 'SET_FILTER_ALLOCATION',
+              allocation: e.target.value as typeof state.filterAllocation,
+            })
+          }
+        >
+          <option value="">All</option>
+          <option value="FT">FT</option>
+          <option value="CO">CO</option>
+          <option value="unallocated">Unallocated</option>
+        </select>
       </div>
     </div>
   )

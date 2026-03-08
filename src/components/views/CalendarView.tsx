@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useDashboard } from '../../context/DashboardContext'
 import { useFilteredBookings } from '../../hooks/useFilteredBookings'
 import { HOURS, ROOM_COLORS } from '../../constants'
+import { AllocationToggle } from '../ui/AllocationToggle'
 import type { Booking } from '../../types'
 
 interface Props {
@@ -118,11 +119,7 @@ export function CalendarView({ onHover }: Props) {
               <div
                 key={h}
                 className="flex items-start pt-1 px-2 text-[10px]"
-                style={{
-                  height: 52,
-                  color: 'var(--muted)',
-                  borderBottom: '1px solid var(--border)',
-                }}
+                style={{ height: 52, color: 'var(--muted)', borderBottom: '1px solid var(--border)' }}
               >
                 {String(h).padStart(2, '0')}:00
               </div>
@@ -140,14 +137,7 @@ export function CalendarView({ onHover }: Props) {
                 style={{ borderRight: di < 6 ? '1px solid var(--border)' : undefined }}
               >
                 {HOURS.map((h) => (
-                  <div
-                    key={h}
-                    style={{
-                      height: 52,
-                      borderBottom: 'none',
-                      borderBottomColor: 'rgba(42,47,61,0.5)',
-                    }}
-                  />
+                  <div key={h} style={{ height: 52, borderBottom: '1px solid rgba(42,47,61,0.4)' }} />
                 ))}
                 {dayBookings.map((b) => {
                   const startH = parseInt(b.startTime)
@@ -158,13 +148,19 @@ export function CalendarView({ onHover }: Props) {
                   return (
                     <div
                       key={b.id}
-                      className="absolute left-[3px] right-[3px] rounded text-[10px] leading-snug cursor-pointer overflow-hidden z-[2] transition-opacity hover:opacity-85"
-                      style={{ top, height, background: color, padding: '3px 6px' }}
+                      className="absolute left-[3px] right-[3px] rounded text-[10px] leading-snug cursor-default overflow-hidden z-[2] transition-opacity hover:opacity-90"
+                      style={{ top, height, background: color, padding: '3px 5px 3px 6px' }}
                       onMouseEnter={(e) => onHover(b, e)}
                       onMouseLeave={() => onHover(null)}
                     >
-                      <div className="font-medium">{b.site.split(' ')[0]}</div>
+                      <div className="font-medium truncate">{b.site.split(' ')[0]}</div>
                       <div className="opacity-85 text-[9px]">{b.room} · {b.startTime}–{b.endTime}</div>
+                      {/* Allocation toggle — shown when event is tall enough */}
+                      {height >= 48 && (
+                        <div className="mt-1">
+                          <AllocationToggle booking={b} compact />
+                        </div>
+                      )}
                     </div>
                   )
                 })}
